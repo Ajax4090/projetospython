@@ -6,7 +6,7 @@ dir = os.listdir()
 
 arquivos = [arquivo for arquivo in dir if '.pdf' in arquivo.lower()]
 
-cartao_ponto = ('ADRIANA APARECIDA ALVES COUTINHO .pdf')
+cartao_ponto = ('ADRIANA APARECIDA ALVES COUTINHO.PDF')
 
 file = 'Colaboradores' 
 if not os.path.exists(file):

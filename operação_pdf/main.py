@@ -6,13 +6,13 @@ dir = os.listdir()
 
 arquivos = [arquivo for arquivo in dir if '.pdf' in arquivo.lower()]
 
-cartao_ponto = '.PDF'
+
 
 file = 'Colaboradores' 
 if not os.path.exists(file):
     os.mkdir(file)
 
-with open(cartao_ponto, 'rb' ) as reader:
+with open(arquivos, 'rb' ) as reader:
     pdf = PdfReader(reader)
 
     for pagina in tqdm(pdf.pages):

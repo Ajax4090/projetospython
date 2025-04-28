@@ -37,13 +37,16 @@ with open(cartao_arquivo, 'rb' ) as reader:
             
 
         if texto[4].isnumeric():
-            print(texto[3])
+            cpf = (texto[3]) 
+            print(cpf)
         elif texto[5].isnumeric():
-            print(texto[4])
-            
+            cpf = (texto[4])
+            print(cpf)
+        else:
+            cpf = '000000' 
 
         nome = texto[2]
-        cpf = texto[3]
+        
         cpf_num = cpf.split()[-1][-32:-18]
 cpf_num = [char for char in cpf_num if char.isnumeric()]
 cpf_num = '' .join(cpf_num)

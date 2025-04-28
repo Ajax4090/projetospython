@@ -6,7 +6,7 @@ dir = os.listdir()
 
 arquivos = [arquivo for arquivo in dir if '.pdf' in arquivo.lower()]
 
-cartao_ponto = (arquivos[0])
+cartao_ponto = '.PDF'
 
 file = 'Colaboradores' 
 if not os.path.exists(file):
@@ -18,10 +18,18 @@ with open(cartao_ponto, 'rb' ) as reader:
     for pagina in tqdm(pdf.pages):
         texto = pagina.extract_text().split('\n')
         nome = texto[2]
-        cpf = texto[3]
+
+        if texto[4].isnumeric():
+            cpf = (texto[3]) 
+            print(cpf)
+        elif texto[5].isnumeric():
+            cpf = (texto[4])
+            print(cpf)
+        else:
+            cpf = '000000' 
         
         
-        cpf_num = cpf[48:-18]
+        cpf_num = cpf.split()[-1][-32:-18]
         cpf_num = [char for char in cpf_num if char.isnumeric()]
         cpf_num = '' .join(cpf_num)
         

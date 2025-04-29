@@ -10,6 +10,18 @@ class Cores:
     CIANO = '\033[96m'
     RESET = '\033[0m'
 
+    def verificar_pdf_na_pasta(test02):
+                contador = 0  
+                for pdf_file in os.listdir(test02):
+                        if pdf_file.lower().endswith(".pdf"):
+                            contador += 1
+                return contador > 0, contador
+    test02 = "C:/Users/User132/Documents/GitHub/projetospython/operação_pdf/teste01  "            
+    existe_pdf, total_pdfs = verificar_pdf_na_pasta(test02)
+
+    if existe_pdf:
+         print(f'existe {total_pdfs}')
+
 dir_files = os.listdir()
 arquivos_pdf = [arquivo for arquivo in dir_files if arquivo.lower().endswith('.pdf')]
 
@@ -37,6 +49,9 @@ for pdf_file in arquivos_pdf:
                 return texto[4]
             else:
                 return '000000'
+            
+        
+                    
 
         for pagina in tqdm(pdf.pages, desc=f"{Cores.AMARELO}Extraindo páginas{Cores.RESET}", colour='yellow'):
             texto = pagina.extract_text().split('\n')
@@ -67,3 +82,5 @@ for root, dirs, files in os.walk(output_dir_geral):
     for i, file_name in enumerate(files, 1):
         if file_name.lower().endswith('.pdf'):
             print(f"  {Cores.VERDE}{i}.{Cores.RESET} {file_name}")
+
+        

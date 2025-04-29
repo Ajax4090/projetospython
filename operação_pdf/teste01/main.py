@@ -2,25 +2,30 @@ import os
 from PyPDF2 import PdfReader, PdfWriter
 from tqdm import tqdm
 
-# Lista todos os PDFs no diretório atual
+class Cores:
+    VERDE = '\033[92m'
+    AMARELO = '\033[93m'
+    AZUL = '\033[94m'
+    MAGENTA = '\033[95m'
+    CIANO = '\033[96m'
+    RESET = '\033[0m'
+
 dir_files = os.listdir()
 arquivos_pdf = [arquivo for arquivo in dir_files if arquivo.lower().endswith('.pdf')]
 
-# Pasta geral de saída (opcional)
 output_dir_geral = 'Colaboradores'
 if not os.path.exists(output_dir_geral):
     os.mkdir(output_dir_geral)
 
-# Processa cada PDF encontrado
 for pdf_file in arquivos_pdf:
-    print(f"\nProcessando: {pdf_file}...")
+    print(f"\n{Cores.AZUL}→ Processando: {Cores.CIANO}{pdf_file}{Cores.RESET}")
     
-    # Cria uma pasta com o nome do arquivo PDF (sem extensão)
-    nome_pasta = os.path.splitext(pdf_file)[0]  # Remove o .pdf
+    nome_pasta = os.path.splitext(pdf_file)[0]
     output_dir = os.path.join(output_dir_geral, nome_pasta)
     
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+        print(f"{Cores.VERDE}✔ Pasta criada: {output_dir}{Cores.RESET}")
     
     with open(pdf_file, 'rb') as reader:
         pdf = PdfReader(reader)
@@ -33,37 +38,32 @@ for pdf_file in arquivos_pdf:
             else:
                 return '000000'
 
-        for pagina in tqdm(pdf.pages, desc=f"Páginas ({pdf_file})"):
+        for pagina in tqdm(pdf.pages, desc=f"{Cores.AMARELO}Extraindo páginas{Cores.RESET}", colour='yellow'):
             texto = pagina.extract_text().split('\n')
             
             if len(texto) < 3:
-                continue  # Pula páginas com formato inválido
+                continue
             
-            # Extrai nome e CPF
-            nome = texto[2].strip()  # Remove espaços extras
+            nome = texto[2].strip()
             cpf = extrair_cpf(texto)
-            
-            # Formata CPF (remove caracteres não numéricos)
-            cpf_num = ''.join(filter(str.isdigit, cpf))[-11:]  # Pega os últimos 11 dígitos
-
-            # Nome do arquivo de saída
+            cpf_num = ''.join(filter(str.isdigit, cpf))[-11:]
             file_name = f"{nome} {cpf_num}.pdf"
             file_path = os.path.join(output_dir, file_name)
 
-            # Salva a página como um novo PDF
             writer = PdfWriter()
             writer.add_page(pagina)
             
             with open(file_path, 'wb') as output:
                 writer.write(output)
+        
+        print(f"{Cores.VERDE}✓ Concluído: {pdf_file}{Cores.RESET}\n")
 
-# Conta e lista os PDFs gerados (por pasta)
-print("\nResumo de arquivos gerados:")
+print(f"\n{Cores.MAGENTA}════════ RESUMO ════════{Cores.RESET}")
 for root, dirs, files in os.walk(output_dir_geral):
     if root == output_dir_geral:
-        continue  # Ignora a pasta geral se só quiser as subpastas
+        continue
     
-    print(f"\nPasta: {os.path.basename(root)}")
+    print(f"\n{Cores.AZUL}Pasta: {Cores.CIANO}{os.path.basename(root)}{Cores.RESET}")
     for i, file_name in enumerate(files, 1):
         if file_name.lower().endswith('.pdf'):
-            print(f"  {i}. {file_name}")
+            print(f"  {Cores.VERDE}{i}.{Cores.RESET} {file_name}")

@@ -23,7 +23,7 @@ def copiar_arquivos(pasta_origem, pasta_destino):
         # Verifica se é um arquivo (não uma pasta) e move o arquivo para a pasta de origem,
         #se colocar 'shutil.copy' ele copia os arquivos e nao move
         if os.path.isfile(caminho_origem):
-            shutil.copy(caminho_origem, caminho_destino)
+            shutil.move(caminho_origem, caminho_destino)
             contador += 1   
             print(f"Arquivo '{arquivo}' copiada com sucesso!")
     

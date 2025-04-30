@@ -1,0 +1,105 @@
+import os
+import shutil
+from difflib import SequenceMatcher
+from tqdm import tqdm
+
+def comparar_nome_pdf_pasta(caminho_pdf, caminho_pasta):
+    nome_pdf = os.path.basename(caminho_pdf).replace(".pdf", "")
+    nome_pasta = os.path.basename(caminho_pasta)
+    return nome_pdf == nome_pasta
+
+def similar(a, b, threshold=0.9):
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio() >= threshold
+
+def encontrar_pasta_correspondente(nome_pdf, pastas_existentes):
+    for pasta in pastas_existentes:
+        if similar(nome_pdf, pasta):
+            return pasta
+    return None
+
+def remover_pasta_se_vazia(caminho_pasta):
+    try:
+        if os.path.exists(caminho_pasta):
+            if not os.listdir(caminho_pasta):
+                os.rmdir(caminho_pasta)
+                return True
+        return False
+    except Exception as e:
+        print(f'Erro ao remover pasta {caminho_pasta}: {str(e)}')
+        return False
+
+def processar_boletos(pasta_destino):
+    dir = 'BOLETOS'
+    if not os.path.exists(dir):
+        print(f'Diretório {dir} não encontrado')
+        return
+    
+    nome_arquivos = [f for f in os.listdir(dir) if f.lower().endswith('.pdf')]
+    
+    for nome_arquivo in tqdm(nome_arquivos, desc="Processando boletos"):
+        try:
+            nome_original = nome_arquivo
+            nome_tratado = nome_original.replace('_', ' ')
+            partes = nome_tratado.split("-")
+            nome_tratado = ' '.join(partes[1:-1]).strip() if len(partes) > 1 else nome_tratado.strip()
+            nome_tratado = nome_tratado if nome_tratado else 'Sem Nome'
+
+            pasta_processada = os.path.join(pasta_destino, nome_tratado)
+            os.makedirs(pasta_processada, exist_ok=True)
+
+            origem = os.path.join(dir, nome_original)
+            destino = os.path.join(pasta_processada, nome_original)
+
+            if comparar_nome_pdf_pasta(origem, pasta_processada):
+                shutil.copy(origem, destino)
+            
+        except Exception as e:
+            print(f'Erro ao processar {nome_original}: {str(e)}')
+        
+        finally:
+            remover_pasta_se_vazia(pasta_processada)
+
+def distribuir_pdfs():
+    dir_pdf = "NOTA_FISCAL"
+    dir_pastas = "pdf_lidos"
+    if not os.path.exists(dir_pastas):
+        os.mkdir(dir_pastas)
+        
+    if not os.path.exists(dir_pdf):
+        print(f"Erro: Diretório {dir_pdf} não encontrado!")
+        return
+    
+    if not os.path.exists(dir_pastas):
+        os.makedirs(dir_pastas)
+
+    pdfs = [f for f in os.listdir(dir_pdf) if f.lower().endswith('.pdf')]
+    pastas_existentes = [d for d in os.listdir(dir_pastas) if os.path.isdir(os.path.join(dir_pastas, d))]
+    
+    for pdf in pdfs:
+        nome_base = ' '.join(pdf.split()[:-1]).replace('.pdf', '').strip()
+        pasta_destino = encontrar_pasta_correspondente(nome_base, pastas_existentes)
+        
+        if pasta_destino:
+            destino = os.path.join(dir_pastas, pasta_destino, pdf)
+            origem = os.path.join(dir_pdf, pdf)
+            shutil.copy(origem, destino)
+        else:
+            nova_pasta = os.path.join(dir_pastas, nome_base)
+            os.makedirs(nova_pasta, exist_ok=True)
+            destino = os.path.join(nova_pasta, pdf)
+            origem = os.path.join(dir_pdf, pdf)
+            shutil.copy(origem, destino)
+            pastas_existentes.append(nome_base)
+
+def funcao_principal():
+    pasta_destino = 'pdf_lidos'
+    os.makedirs(pasta_destino, exist_ok=True)
+    processar_boletos(pasta_destino)
+    distribuir_pdfs()
+    
+    for root, dirs, files in os.walk(pasta_destino, topdown=False):
+        for dir in dirs:
+            remover_pasta_se_vazia(os.path.join(root, dir))
+
+if __name__ == "__main__":
+    funcao_principal()

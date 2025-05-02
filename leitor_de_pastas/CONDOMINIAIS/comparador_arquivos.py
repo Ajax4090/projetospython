@@ -134,8 +134,8 @@ def comparar_pastas(pasta1, pasta2, detalhes=False, ignorar=[], comparar_conteud
     return resultado
 
 if __name__ == "__main__":
-    pasta_a = "pasta_lida"
-    pasta_b = "pdf_lidos"
+    pasta_a = "apenas_boletos"
+    pasta_b = "apenas_nfs"
     
     resultado = comparar_pastas(
         pasta_a, 

@@ -3,7 +3,7 @@ import shutil
 from tqdm import tqdm  
 
 def funcao_principal():
-    pasta_destino = 'pasta_lida'
+    pasta_destino = 'apenas_boletos'
     if not os.path.exists(pasta_destino):
         os.makedirs(pasta_destino)  
 
@@ -80,9 +80,9 @@ def processar_boletos(pasta_destino):
     for nome_arquivo in tqdm(nome_arquivos, desc="Processando boletos"):
         try:
             nome_original = nome_arquivo
-            nome_tratado = nome_original.replace('_', ' ')
+            nome_tratado = nome_original.replace(' ', '_')
             partes = nome_tratado.split("-")
-            nome_tratado = ' '.join(partes[1:-1]).strip() if len(partes) > 1 else nome_tratado.strip()
+            nome_tratado = '_'.join(partes[1:-1]).strip() if len(partes) > 1 else nome_tratado.strip()
             nome_tratado = nome_tratado if nome_tratado else 'Sem Nome'
 
             pasta_processada = os.path.join(pasta_destino, nome_tratado)
@@ -101,7 +101,7 @@ def processar_boletos(pasta_destino):
             remover_pasta_se_vazia(pasta_processada)
 
 def funcao_principal():
-    pasta_destino = 'pasta_lida'
+    pasta_destino = 'apenas_boletos'
     os.makedirs(pasta_destino, exist_ok=True)
     processar_boletos(pasta_destino)
     

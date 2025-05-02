@@ -65,7 +65,7 @@ def encontrar_pasta_correspondente(nome_pdf, pastas_existentes):
 
 def distribuir_pdfs():
     dir_pdf = "NOTA_FISCAL"
-    dir_pastas = "pasta_lida"
+    dir_pastas = "apenas_nfs"
     
     if not os.path.exists(dir_pdf):
         print(f"Erro: Diretório {dir_pdf} não encontrado!")
